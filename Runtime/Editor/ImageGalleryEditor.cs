@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using VRC.SDK3.Data;
 using VRC.SDKBase;
+using VRC.SDKBase.Editor.BuildPipeline;
 
 namespace jp.ootr.ImageGallery.Editor
 {
@@ -86,15 +87,7 @@ namespace jp.ootr.ImageGallery.Editor
 
             if (flag)
             {
-                var urls = script.registeredUrls.Unique();
-                _registeredVRCUrls.arraySize = urls.Length;
-                
-                for (int i = 0; i < urls.Length; i++)
-                {
-                    _registeredVRCUrls.GetArrayElementAtIndex(i).FindPropertyRelative("url").stringValue = urls[i];
-                }
-                
-                serializedObject.ApplyModifiedProperties();
+                ImageGalleryUtils.UpdateVRCUrls(script);
             }
             EditorGUIUtility.labelWidth = originalLabelWidth;
             EditorGUILayout.EndHorizontal();
@@ -123,6 +116,65 @@ namespace jp.ootr.ImageGallery.Editor
                 return true;
             }
             return EditorGUI.EndChangeCheck();
+        }
+    }
+
+    public static class ImageGalleryUtils
+    {
+        public static void UpdateVRCUrls(ImageGallery script)
+        {
+            var urls = script.registeredUrls.Unique();
+            var so = new SerializedObject(script);
+            var registeredVRCUrls = so.FindProperty("vrcUrls");
+            registeredVRCUrls.arraySize = urls.Length;
+                
+            for (int i = 0; i < urls.Length; i++)
+            {
+                registeredVRCUrls.GetArrayElementAtIndex(i).FindPropertyRelative("url").stringValue = urls[i];
+            }
+                
+            so.ApplyModifiedProperties();
+        }
+    }
+    [InitializeOnLoad]
+    public class PlayModeNotifier
+    {
+        static PlayModeNotifier()
+        {
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+
+            var scripts = ComponentUtils.GetAllComponents<ImageGallery>();
+            foreach (var script in scripts)
+            {
+                ImageGalleryUtils.UpdateVRCUrls(script);
+            }
+        }
+
+        private static void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.EnteredPlayMode)
+            {
+                var scripts = ComponentUtils.GetAllComponents<ImageGallery>();
+                foreach (var script in scripts)
+                {
+                    ImageGalleryUtils.UpdateVRCUrls(script);
+                }
+            }
+        }
+    }
+
+    public class SetObjectReferences : UnityEditor.Editor, IVRCSDKBuildRequestedCallback
+    {
+        public int callbackOrder => 10;
+
+        public bool OnBuildRequested(VRCSDKRequestedBuildType requestedBuildType)
+        {
+            var scripts = ComponentUtils.GetAllComponents<ImageGallery>();
+            foreach (var script in scripts)
+            {
+                ImageGalleryUtils.UpdateVRCUrls(script);
+            }
+            return true;
         }
     }
 }

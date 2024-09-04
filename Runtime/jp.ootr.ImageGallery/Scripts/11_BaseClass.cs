@@ -10,6 +10,6 @@ namespace jp.ootr.ImageGallery
         [SerializeField] protected int restoreTimeout = 60;
         [SerializeField] protected RestoreMode restoreMode = RestoreMode.Timeout;
         [SerializeField] protected SyncMode syncMode = SyncMode.Timestamp;
-        protected ulong LastCastTime;
+        protected ulong LastCastTime = 0;
     }
 }

@@ -46,6 +46,10 @@ namespace jp.ootr.ImageGallery
                         break;
                 }
             }
+            if (_toLoadUrls.Length == 0)
+            {
+                SendCustomEventDelayedFrames(nameof(OnPreloadComplete), 1);
+            }
         }
 
         private void PushVRCUrls()
@@ -75,7 +79,6 @@ namespace jp.ootr.ImageGallery
             {
                 var index = Array.IndexOf(Urls, source);
                 FileNames = FileNames.Replace(fileNames, index);
-                Debug.Log($"{string.Join(",",fileNames)} / {string.Join(",",FileNames)}");
                 var newUrls = new string[fileNames.Length];
                 for (var i = 0; i < fileNames.Length; i++) newUrls[i] = source;
 

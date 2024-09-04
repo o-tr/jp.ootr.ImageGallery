@@ -21,6 +21,7 @@
         {
             if (Urls.Length == 0)
             {
+                ConsoleWarn("No images to load");
                 return;
             }
             switch (syncMode)
