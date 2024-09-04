@@ -1,0 +1,19 @@
+{
+  "name": "jp.ootr.ImageGallery",
+  "references": [
+    "jp.ootr.common",
+    "jp.ootr.ImageDeviceController",
+    "jp.ootr.ImageScreen",
+    "UdonSharp.Runtime",
+    "VRC.Udon"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
